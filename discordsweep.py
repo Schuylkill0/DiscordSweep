@@ -42,7 +42,8 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None):
             "user-agent":USER_AGENT
         }, params={
             "author_id":userID,
-            "offset":offset
+            "offset":offset,
+            "include_nsfw":True
         })
 
         if searchRes.status_code == 400:
