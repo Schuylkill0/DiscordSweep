@@ -55,8 +55,8 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None, minAgeHours=No
             try:
                 dcResp = searchRes.json()
                 if "retry_after" in dcResp:
-                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} ms")
-                    time.sleep(dcResp['retry_after'] / 1000 * 2)
+                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
+                    time.sleep(dcResp['retry_after'])
                     continue
             except:
                 print("[WARNING] 429, too many requests! Waiting 30s...")
@@ -70,8 +70,8 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None, minAgeHours=No
         dcResp = searchRes.json()
 
         if "retry_after" in dcResp:
-            print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} ms")
-            time.sleep(dcResp['retry_after'] / 1000 * 2)
+            print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
+            time.sleep(dcResp['retry_after'])
             continue
 
         for messageBlock in dcResp["messages"]:
@@ -109,8 +109,8 @@ def deleteMessages(messages, authToken):
             try:
                 dcResp = deleteRes.json()
                 if "retry_after" in dcResp:
-                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} ms")
-                    time.sleep(dcResp['retry_after'] / 1000 * 2)
+                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
+                    time.sleep(dcResp['retry_after'])
                     continue
             except:
                 continue
