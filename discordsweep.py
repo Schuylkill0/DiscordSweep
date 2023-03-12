@@ -55,8 +55,8 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None, minAgeHours=No
             try:
                 dcResp = searchRes.json()
                 if "retry_after" in dcResp:
-                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
-                    time.sleep(dcResp['retry_after'])
+                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']*5} s")
+                    time.sleep(dcResp['retry_after']*5)
                     continue
             except:
                 print("[WARNING] 429, too many requests! Waiting 30s...")
@@ -70,8 +70,8 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None, minAgeHours=No
         dcResp = searchRes.json()
 
         if "retry_after" in dcResp:
-            print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
-            time.sleep(dcResp['retry_after'])
+            print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']*5} s")
+            time.sleep(dcResp['retry_after']*5)
             continue
 
         for messageBlock in dcResp["messages"]:
@@ -99,21 +99,23 @@ def retreiveMessages(serverID, userID, authToken, deleteCap=None, minAgeHours=No
 
 def deleteMessages(messages, authToken):
     for message in messages:
-        deleteRes = requests.delete(f"{API_URL}/channels/{message['cid']}/messages/{message['mid']}", headers={
-            "authorization":authToken,
-            "user-agent":USER_AGENT
-        })
+        while True:
+            deleteRes = requests.delete(f"{API_URL}/channels/{message['cid']}/messages/{message['mid']}", headers={
+                "authorization":authToken,
+                "user-agent":USER_AGENT
+            })
 
-        if deleteRes.status_code != 204:
-            print(f"[ERROR] Unexpected error {deleteRes.status_code}")
-            try:
-                dcResp = deleteRes.json()
-                if "retry_after" in dcResp:
-                    print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']} s")
-                    time.sleep(dcResp['retry_after'])
-                    continue
-            except:
-                continue
+            if deleteRes.status_code != 204:
+                print(f"[ERROR] Unexpected error {deleteRes.status_code}")
+                try:
+                    dcResp = deleteRes.json()
+                    if "retry_after" in dcResp:
+                        print(f"[WARNING] Being rate limited... Waiting {dcResp['retry_after']*5} s")
+                        time.sleep(dcResp['retry_after']*5)
+                    else:
+                        break
+                except:
+                    break
 
 parser = argparse.ArgumentParser()
 parser.add_argument("serverID", help="Server ID to wipe from", type=str)
